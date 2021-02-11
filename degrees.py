@@ -92,8 +92,45 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
 
-    # TODO
-    raise NotImplementedError
+    # Initialize frontier
+    frontier = QueueFrontier()
+    neighbors = neighbors_for_person(source)
+    for neighbor in neighbors:
+        node = Node(state=neighbor[1], parent=None, action=neighbor[0])
+        frontier.add(node)
+
+    # Initialize explored set
+    explored = set()
+    explored.add(source)
+
+    # Chris 1697: "The Princess Bride" 93779
+    # Robin 705: "Forrest Gump" 109830 ja "The Princess Bride" 93779
+    # Gary 641: Apollo 13 112384 ja Forrest Gump 109830
+
+    while True:
+        if frontier.empty():
+            return None
+ 
+        # choose a node from frontier
+        node = frontier.remove()
+        explored.add(node.state)
+
+        # Check if solution
+        if node.state == target:
+            path = []
+            while node.parent is not None:
+                path.append((node.action, node.state))
+                node = node.parent
+            path.append((node.action, node.state))
+            path.reverse()
+            return path
+
+        # Add neighbours to frontier
+        neighbors = neighbors_for_person(node.state)
+        for (action, state) in neighbors:
+            if (not frontier.contains_state(state)) and state not in explored:
+                child = Node(state=state, parent=node, action=action)
+                frontier.add(child)
 
 
 def person_id_for_name(name):
